@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Async pure-lit</title>
     <script type="module" src="script.js"></script>
+    <style>
+      body {
+        display: flex;
+      }
+      body > div {
+        margin: 2rem;
+        padding: 2rem;
+        box-shadow:0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important;
+      }
+    </style>
   </head>
   <body>
-    <posts-list>
+    <div>
+      <h1>Success</h1>
+      <posts-list src="https://jsonplaceholder.typicode.com/posts">
         Please wait while loading...
-    </posts-list>      
+      </posts-list>
+    </div>
+    <div>
+      <h1>Failure without template</h1>
+      <posts-list src="404"> Please wait while loading... </posts-list>
+    </div>
+    <div>
+      <h1>Failure with slot template</h1>
+      <posts-list src="404">
+        Please wait while loading...
+        <div slot="error">
+          <h1>Error</h1>
+          <p>Something went wrong. Please try again later.</p>
+        </div>
+      </posts-list>
+    </div>
   </body>
 </html>
