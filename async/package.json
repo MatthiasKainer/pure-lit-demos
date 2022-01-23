@@ -1,0 +1,20 @@
+{
+  "name": "async-pure-lit",
+  "version": "1.0.0",
+  "description": "Example for how to use async calls in pure-lit",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup index.js --format esm --file public/script.js",
+    "serve": "serve public"
+  },
+  "author": "Matthias Kainer",
+  "license": "ISC",
+  "dependencies": {
+    "lit": "^2.1.1",
+    "pure-lit": "^2.0.1"
+  },
+  "devDependencies": {
+    "rollup": "^2.66.0",
+    "serve": "^13.0.2"
+  }
+}
