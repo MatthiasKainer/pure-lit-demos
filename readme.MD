@@ -9,4 +9,4 @@ For all projects run `npm install && npm run build && npm run serve`. You can th
 |---------------------|----------------------------------------------------------------|
 | [async](async)      | A simple async fetch without any hooks                         |
 | [hooks](hooks)      | A simple todo list using hooks                                 |
-| [worflow](workflow) | A more sophisticated example showing a workflow for a chat app |
+| [workflow](workflow) | A more sophisticated example showing a workflow for a chat app |
