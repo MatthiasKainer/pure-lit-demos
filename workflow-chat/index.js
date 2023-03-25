@@ -1,5 +1,6 @@
 import { html } from "https://unpkg.com/lit@2.1.1/index.js?module";
-import { pureLit, useWorkflow, useOnce } from "https://unpkg.com/pure-lit@2.0.1/lib/index.module.js?module";
+import { pureLit, useOnce } from "https://unpkg.com/pure-lit@2.0.1/lib/index.module.js?module";
+import {useWorkflow} from "lit-element-state-decoupler"
 import { io } from "https://cdn.socket.io/4.3.1/socket.io.esm.min.js";
 import { hours } from "./duration"
 import "./components"
@@ -7,12 +8,12 @@ import "./components"
 const socket = io("http://localhost:3001");
 
 const userReducer = () => ({
-    createUser: async (userName) => ({ userName }),
-    deleteUser: async (userName) => undefined,
+    create: async (userName) => ({ userName }),
+    delete: async (_) => undefined,
 });
 
 const chatReducer = (state) => ({
-    joinChat: (id) => Promise.resolve({ id }),
+    join: (id) => Promise.resolve({ id }),
     sendMessage: async (message) => {
         socket.emit("message", message);
         return state;
@@ -26,7 +27,7 @@ const chatReducer = (state) => ({
             ],
         };
     },
-    leaveChat: async () => undefined,
+    leave: async () => undefined,
 });
 
 pureLit("easy-chat", async (element) => {
@@ -40,20 +41,20 @@ pureLit("easy-chat", async (element) => {
         // create the user projection
         user: async () => {
             return html`<create-user @onCreate=${({ detail: userName }) => {
-                workflow.addActivity("createUser", userName);
-                workflow.addCompensation("deleteUser", userName);
+                workflow.trigger("user.create", userName);
+                workflow.onCancel("user.delete", userName);
             }}></create-user>`;
         },
         // create the chat projection once we have an user
         chat: async () => {
             // if the user does not join a chat in hour, delete the account
             workflow.after(hours(1), {
-                type: "addActivity",
-                args: ["joinChat"],
-            }, async () => await workflow.compensate());
+                type: "trigger",
+                args: ["chat.join"],
+            }, async () => await workflow.cancel());
             return html`<chat-list @onJoin=${({ detail: chat }) => {
-                workflow.addActivity("joinChat", chat)
-                workflow.addCompensation("leaveChat", chat)
+                workflow.trigger("chat.join", chat)
+                workflow.onCancel("chat.leave", chat)
             }}></chat-list>`;
         },
         // execute the send a message-loop
@@ -61,22 +62,22 @@ pureLit("easy-chat", async (element) => {
             // if the user has not participated for an hour, leave the chat and delete the account
             const registerTimeout = () => {
                 workflow.after(hours(1), {
-                    type: "addActivity",
-                    args: ["sendMessage"],
-                }, async () => await workflow.compensate());
+                    type: "trigger",
+                    args: ["chat.sendMessage"],
+                }, async () => await workflow.cancel());
             }
 
             useOnce(element, () => {
                 socket.on("message", (stream) => {
-                    workflow.addActivity("receiveMessage", stream)
+                    workflow.trigger("chat.receiveMessage", stream)
                 })
                 registerTimeout();
             })
 
-            const { userName } = workflow.projections("user");
-            const { id, messages } = workflow.projections("chat");
+            const { userName } = workflow.view("user");
+            const { id, messages } = workflow.view("chat");
             return html`<chat-window id="${id}" userName="${userName}" .messages="${messages}" @onSendMessage=${({ detail: message }) => {
-                workflow.addActivity("sendMessage", { id, message, userName })
+                workflow.trigger("chat.sendMessage", { id, message, userName })
                 registerTimeout();
             }}></chat-window>`;
         }

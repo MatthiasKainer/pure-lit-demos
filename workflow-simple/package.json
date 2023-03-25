@@ -1,0 +1,24 @@
+{
+  "name": "workflow-simple",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup index.js --format esm --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs --file public/script.js",
+    "serve": "serve public"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@shoelace-style/shoelace": "^2.3.0",
+    "lit": "^2.7.0",
+    "lit-element-state-decoupler": "^2.0.2",
+    "pure-lit": "^2.0.7"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "rollup": "^3.20.2",
+    "serve": "^14.2.0"
+  }
+}
